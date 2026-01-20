@@ -4,10 +4,10 @@ import datetime
 import os
 
 app = Flask(__name__)
-KEY - os.getenv("C2_SHARED_KEY")
+KEY = os.getenv("C2_SHARED_KEY")
 
 if not KEY:
-    raise RuntimeEror("C2_SHARED_KEY não definida")
+    raise RuntimeError("C2_SHARED_KEY não definida")
 
 fernet = Fernet(KEY.encode())
 
