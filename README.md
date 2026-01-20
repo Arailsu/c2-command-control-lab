@@ -9,4 +9,4 @@ Para definir as keys entre o agent e o server é necessário criar um arquivo .e
   print(Fernet.generate_key().decode())
   EOF
 > 
-esse .env terá a key nele usando a variável C2_SHARED_KEYS = <KEY AQUI>
+esse .env terá a key nele usando a variável C2_SHARED_KEY = <KEY AQUI>
