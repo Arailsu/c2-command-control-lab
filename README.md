@@ -93,16 +93,6 @@ custom_c2/
 
 ---
 
-## 📌 TODO (Próximas melhorias)
-
-- [ ] Corrigir e reintroduzir CLI (`c2cli.py`)
-- [ ] Persistência de `agents` e `commands` em disco
-- [ ] Painel web com Flask + JS
-- [ ] Módulo de autenticação HMAC por agente
-- [ ] C2 via DNS ou canais covertos
-
----
-
 ## ⚠️ Aviso legal
 
 Este projeto é para fins **educacionais e de pesquisa em ambientes controlados**.  
