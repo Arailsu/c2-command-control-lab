@@ -29,6 +29,7 @@ def register():
     log_event(f"Registered: {agent_id}")
     return jsonify({'agent_id': agent_id})
 
+
 @app.route('/getcommand', methods=['GET'])
 def get_command():
     agent_id = request.headers.get('Agent-id')
@@ -59,6 +60,18 @@ def send_command():
         log_event(f"Comando enviado para {agent_id}: {cmd}")
         return jsonify({'status': 'enqueued'})
     return jsonify({'status': 'agent_not_found'}), 404
+
+@app.route("/agents", methods=["GET"])
+def list_agents():
+    return jsonify({
+        aid: {
+            "last_seen": str(info["last_seen"]),
+            "results": len(info["results"]),
+            "queue": len(commands[aid])
+        }
+        for aid, info in agents.items()
+    })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
